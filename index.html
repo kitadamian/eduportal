@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPortal - Twoje Źródło Wiedzy</title>
+    <meta name="description" content="Aplikacja do nauki z oficjalnymi, sprawdzonymi źródłami edukacyjnymi dla uczniów i studentów.">
+    <style>
+        /* --- Zmienne CSS (Light Mode Default) --- */
+        :root {
+            --primary-color: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary-color: #0f172a;
+            --accent-color: #f59e0b;
+            
+            /* Kolory jasne */
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --text-main: #334155;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* --- Zmienne CSS (Dark Mode) --- */
+        body.dark-mode {
+            --primary-color: #60a5fa;
+            --primary-dark: #3b82f6;
+            --secondary-color: #e2e8f0;
+            
+            /* Kolory ciemne */
+            --bg-body: #0f172a; /* Ciemny granat */
+            --bg-card: #1e293b; /* Nieco jaśniejszy granat */
+            --bg-input: #334155;
+            --text-main: #f1f5f9;
+            --text-light: #94a3b8;
+            --border-color: #334155;
+            
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        /* --- Header i Nawigacja --- */
+        header {
+            background-color: var(--bg-card);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Przycisk Dark Mode */
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-main);
+            padding: 5px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        
+        .theme-toggle:hover {
+            background-color: var(--border-color);
+        }
+
+        .theme-toggle svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Ukrywanie ikony odpowiedniej dla trybu */
+        .theme-toggle .icon-sun { display: none; }
+        .theme-toggle .icon-moon { display: block; }
+        
+        body.dark-mode .theme-toggle .icon-sun { display: block; }
+        body.dark-mode .theme-toggle .icon-moon { display: none; }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none; /* Uproszczenie dla wersji mobilnej */
+            }
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        /* --- Sekcja Główna Aplikacji (Zasoby) --- */
+        .app-section {
+            padding: 40px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin-bottom: 30px;
+        }
+
+        /* Filtry */
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        /* Siatka Zasobów */
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .resource-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-tag {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .card-btn {
+            background-color: var(--bg-body);
+            color: var(--primary-color);
+            padding: 10px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .card-btn:hover {
+            background-color: var(--border-color);
+        }
+
+        /* --- Narzędzia do Nauki (Tools) --- */
+        .tools-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .tool-box {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .tool-box h3 {
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        /* Pomodoro Timer */
+        .timer-display {
+            font-size: 3rem;
+            font-weight: 700;
+            font-family: monospace;
+            color: var(--primary-color);
+            margin: 20px 0;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; }
+
+        .btn-primary { background-color: var(--primary-color); color: white; }
+        
+        /* Dostosowanie drugorzędnego przycisku w dark mode */
+        .btn-secondary { 
+            background-color: var(--border-color); 
+            color: var(--text-main); 
+        }
+
+        .btn-accent { background-color: var(--accent-color); color: white; }
+
+        /* Notatki */
+        textarea.notes-area {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            resize: vertical;
+            font-family: inherit;
+            margin-bottom: 10px;
+            background-color: var(--bg-input);
+            color: var(--text-main);
+        }
+
+        textarea.notes-area:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .save-status {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            height: 20px;
+        }
+
+        /* --- Sekcja Autora --- */
+        .author-section {
+            background-color: var(--secondary-color);
+            color: var(--bg-body); /* Odwrócony kontrast */
+            padding: 40px 0;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .author-card {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .author-name {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .author-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--accent-color);
+            font-weight: 600;
+            border: 1px solid var(--accent-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .author-link:hover {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* --- Footer --- */
+        footer {
+            background-color: #020617;
+            color: #94a3b8;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* --- Ukrywanie elementów --- */
+        .hidden {
+            display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Nawigacja -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10v6"/><path d="M2 10l10-5 10 5-10 5z"/><path d="M12 12v9"/></svg>
+                    EduPortal
+                </div>
+                <div class="nav-right">
+                    <div class="nav-links">
+                        <a href="#resources">Materiały</a>
+                        <a href="#tools">Narzędzia</a>
+                        <a href="#author">O Autorze</a>
+                    </div>
+                    <!-- Przycisk Dark Mode -->
+                    <button class="theme-toggle" id="themeToggle" aria-label="Przełącz motyw">
+                        <!-- Ikona Księżyca (dla Light Mode) -->
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                        <!-- Ikona Słońca (dla Dark Mode) -->
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="container">
+            <h1>Nauka oparta na sprawdzonej wiedzy</h1>
+            <p>Dostęp do oficjalnych źródeł edukacyjnych dla szkół podstawowych, średnich oraz uczelni wyższych. Znajdź wiarygodne informacje i skutecznie się ucz.</p>
+        </div>
+    </section>
+
+    <!-- Główna zawartość -->
+    <main class="container app-section">
+
+        <!-- Sekcja Zasobów -->
+        <div id="resources">
+            <h2 class="section-title">Baza Wiedzy</h2>
+            
+            <!-- Filtry -->
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterResources('all')">Wszystkie</button>
+                <button class="filter-btn" onclick="filterResources('primary')">Szkoła Podstawowa</button>
+                <button class="filter-btn" onclick="filterResources('secondary')">Szkoła Średnia</button>
+                <button class="filter-btn" onclick="filterResources('university')">Studia Wyższe</button>
+            </div>
+
+            <!-- Grid z kartami -->
+            <div class="resources-grid" id="resourcesGrid">
+                
+                <!-- Karty: Podstawowa -->
+                <article class="resource-card" data-category="primary">
+                    <span class="card-tag">Podstawowa</span>
+                    <h3 class="card-title">Epodreczniki.pl</h3>
+                    <p class="card-desc">Oficjalna platforma Ministerstwa Edukacji Narodowej z darmowymi podręcznikami approved.</p>
+                    <a href="https://epodreczniki.pl" target="_blank" rel="noopener noreferrer" class="card-btn">Otwórz źródło</a>
+                </article>
+
+                <article class="resource-card" data-category="primary">
+                    <span class="card-tag">Podstawowa</span>
+                    <h3 class="card-title">Khan Academy (po polsku)</h3>
+                    <p class="card-desc">Darmowe lekcje z matematyki, fizyki i informatyki. Sprawdzone i interaktywne.</p>
+                    <a href="https://pl.khanacademy.org" target="_blank" rel="noopener noreferrer" class="card-btn">Otwórz źródło</a>
+                </article>
+
+                <!-- Karty: Średnia -->
+                <article class="resource-card" data-category="secondary">
+                    <span class="card-tag">Średnia</span>
+                    <h3 class="card-title">Centrum Edukacji Obywatelskiej</h3>
+                    <p class="card-desc">Materiały do wiedzy o społeczeństwie, historii i języka polskiego przygotowane przez ekspertów.</p>
+                    <a href="https://ceo.org.pl" target="_blank" rel="noopener noreferrer" class="card-btn">Otwórz źródło</a>
+                </article>
+
+                <article class="resource-card" data-category="secondary">
+                    <span class="card-tag">Średnia</span>
+                    <h3 class="card-title">Matury to Bzdura</h3>
+                    <p class="card-desc">Popularne, w pełni legalne i darmowe zestawy powtórkowe oparte na arkuszach maturalnych.</p>
+                    <a href="https://www.maturytobzdura.pl" target="_blank" rel="noopener noreferrer" class="card-btn">Otwórz źródło</a>
+                </article>
+
+                <!-- Karty: Studia -->
+                <article class="resource-card" data-category="university">
+                    <span class="card-tag">Studia</span>
+                    <h3 class="card-title">BazEkon</h3>
+                    <p class="card-desc">Wielojęzyczna baza wiedzy o ekonomii, zarządzaniu i finansach prowadzona przez SGH.</p>
+                    <a href="https://bazekon.ibuk.pl" target="_blank" rel="noopener noreferrer" class="card-btn">Otwórz źródło</a>
+                </article>
+
+                <article class="resource-card" data-category="university">
+                    <span class="card-tag">Studia</span>
+                    <h3 class="card-title">Polona (BN)</h3>
+                    <p class="card-desc">Narodowa Biblioteka Cyfrowa. Miliony zdigitalizowanych książek, czasopism i grafik naukowych.</p>
+                    <a href="https://polona.pl" target="_blank" rel="noopener noreferrer" class="card-btn">Otwórz źródło</a>
+                </article>
+
+                 <article class="resource-card" data-category="university">
+                    <span class="card-tag">Studia</span>
+                    <h3 class="card-title">Google Scholar</h3>
+                    <p class="card-desc">Najpopularniejsza wyszukiwarka literatury naukowej: artykuły, tezy, książki, abstrakty.</p>
+                    <a href="https://scholar.google.pl" target="_blank" rel="noopener noreferrer" class="card-btn">Otwórz źródło</a>
+                </article>
+
+            </div>
+        </div>
+
+        <!-- Sekcja Narzędzi -->
+        <div id="tools" style="margin-top: 60px;">
+            <h2 class="section-title">Strefa Skupienia</h2>
+            <div class="tools-container">
+                
+                <!-- Timer Pomodoro -->
+                <div class="tool-box">
+                    <h3>Zegar Nauki (Pomodoro)</h3>
+                    <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--text-light);">Ustaw czas na skupienie (25 min) lub na przerwę (5 min).</p>
+                    <div class="timer-display" id="timerDisplay">25:00</div>
+                    <div class="timer-controls">
+                        <button class="btn btn-primary" onclick="startTimer()">Start</button>
+                        <button class="btn btn-secondary" onclick="pauseTimer()">Pauza</button>
+                        <button class="btn btn-accent" onclick="resetTimer()">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Notatki -->
+                <div class="tool-box">
+                    <h3>Szybkie Notatki</h3>
+                    <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--text-light);">Zapisz swoje myśli na teraz. Dane są przechowywane w Twojej przeglądarce.</p>
+                    <textarea id="studyNotes" class="notes-area" placeholder="Wpisz tutaj ważne informacje..."></textarea>
+                    <div class="save-status" id="saveStatus">Zapisywanie...</div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Sekcja Autora -->
+    <section id="author" class="author-section">
+        <div class="container">
+            <div class="author-card">
+                <div class="author-avatar">DK</div>
+                <h2 class="author-name">Damian Kita</h2>
+                <p>Autor i twórca platformy EduPortal. Pasjonat edukacji i nowych technologii.</p>
+                <a href="https://linktr.ee/kitadamian" target="_blank" rel="noopener noreferrer" class="author-link">
+                    Zobacz profile (Linktr.ee)
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 EduPortal. Wszystkie prawa zastrzeżone. Aplikacja wykorzystuje wyłącznie oficjalne źródła.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logika -->
+    <script>
+        // --- 0. Logika Dark Mode ---
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Funkcja ustawiająca motyw
+        function setTheme(isDark) {
+            if (isDark) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Inicjalizacja motywu
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            setTheme(true);
+        } else {
+            setTheme(false);
+        }
+
+        // Obsługa kliknięcia
+        themeToggleBtn.addEventListener('click', () => {
+            const isDark = !body.classList.contains('dark-mode');
+            setTheme(isDark);
+        });
+
+
+        // --- 1. Logika Filtrowania Zasobów ---
+        function filterResources(category) {
+            // Pobierz wszystkie karty
+            const cards = document.querySelectorAll('.resource-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+
+            // Zaktualizuj wygląd przycisków
+            buttons.forEach(btn => {
+                // Proste dopasowanie tekstu przycisku do kategorii (dla uproszczenia w tym przykładzie)
+                // W produkcji lepiej użyć data-attributes na przyciskach
+                const btnText = btn.textContent.toLowerCase();
+                let isActive = false;
+                
+                if (category === 'all' && btnText.includes('wszystkie')) isActive = true;
+                if (category === 'primary' && btnText.includes('podstawowa')) isActive = true;
+                if (category === 'secondary' && btnText.includes('średnia')) isActive = true;
+                if (category === 'university' && btnText.includes('studia')) isActive = true;
+
+                if (isActive) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Pokaż/ukryj karty
+            cards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                
+                if (category === 'all' || cardCategory === category) {
+                    card.classList.remove('hidden');
+                    card.style.opacity = '0';
+                    setTimeout(() => card.style.opacity = '1', 50);
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+
+        // --- 2. Logika Timer (Pomodoro) ---
+        let timerInterval;
+        let timeLeft = 25 * 60; 
+        let isRunning = false;
+
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (isRunning) {
+                document.title = `(${timerDisplay.textContent}) EduPortal`;
+            } else {
+                document.title = 'EduPortal - Twoje Źródło Wiedzy';
+            }
+        }
+
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateDisplay();
+                } else {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    alert("Czas minął! Czas na przerwę.");
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            updateDisplay();
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timeLeft = 25 * 60;
+            updateDisplay();
+        }
+
+        // --- 3. Logika Notatek (LocalStorage) ---
+        const notesArea = document.getElementById('studyNotes');
+        const saveStatus = document.getElementById('saveStatus');
+
+        // Wczytaj notatki przy starcie
+        const savedNotes = localStorage.getItem('eduPortalNotes');
+        if (savedNotes) {
+            notesArea.value = savedNotes;
+        }
+
+        // Zapisuj przy każdej zmianie z małym opóźnieniem
+        let timeoutId;
+        notesArea.addEventListener('input', () => {
+            saveStatus.textContent = 'Zapisywanie...';
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                localStorage.setItem('eduPortalNotes', notesArea.value);
+                saveStatus.textContent = 'Zapisano ✓';
+                setTimeout(() => { saveStatus.textContent = ''; }, 2000);
+            }, 500);
+        });
+
+    </script>
+</body>
+</html>
